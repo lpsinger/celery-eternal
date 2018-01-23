@@ -1,0 +1,12 @@
+language: python
+python:
+  - "2.7"
+  - "3.4"
+  - "3.5"
+  - "3.6"
+services:
+  - redis-server
+install:
+  - pip install pytest-cov pytest-pep8
+script:
+  - python setup.py test --addopts='-vv --cov --pep8'
