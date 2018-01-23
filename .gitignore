@@ -1,0 +1,8 @@
+*.egg-info
+*.pyc
+__pycache__
+.eggs
+.cache
+.coverage*
+build
+htmlcov
