@@ -98,7 +98,9 @@ html_theme = 'alabaster'
 # documentation.
 #
 html_theme_options = {
-    'github_banner': True
+    'github_banner': True,
+    'github_user': 'lpsinger',
+    'github_repo': project
 }
 
 # Add any paths that contain custom static files (such as style sheets) here,
