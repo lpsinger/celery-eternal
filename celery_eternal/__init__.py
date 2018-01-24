@@ -31,8 +31,8 @@ class EternalTask(AbortableTask, Singleton):
     To create an abortable task, call the :meth:`~celery.Celery.task` decorator
     with the keyword argument ``base=EternalTask``.
 
-    Generally, you should also pass ``bind=True`` so that your task function has
-    access to the :class:`~celery.app.task.Task` instance and can call
+    Generally, you should also pass ``bind=True`` so that your task function
+    has access to the :class:`~celery.app.task.Task` instance and can call
     ``self.is_aborted()``.
 
     Finally, you should also pass ``ignore_result=True``, because if the task
