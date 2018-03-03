@@ -8,7 +8,7 @@ from celery.signals import worker_process_shutdown
 from kombu.exceptions import OperationalError
 import pytest
 
-from .. import EternalTask
+from .. import EternalTask, EternalProcessTask
 
 # Celery application object.
 # Use redis backend, because it supports locks (and thus singleton tasks).
@@ -49,6 +49,13 @@ def example_task_always_fails():
     raise RuntimeError('Expected to fail!')
 
 
+@app.task(base=EternalProcessTask, ignore_result=True, shared=False)
+def example_task_never_returns():
+    while True:
+        touch(os.path.join(os.environ['COV_TMP'], 'example_task_never_returns'))
+        sleep(1)
+
+
 # Only needed if we are measuring test coverage
 try:
     from pytest_cov.embed import multiprocessing_finish
@@ -81,7 +88,8 @@ def test_eternal(start_test_app_worker, tmpdir):
     and one that always fails."""
     filenames = ['example_task_aborts_gracefully',
                  'example_task_always_succeeds',
-                 'example_task_always_fails']
+                 'example_task_always_fails',
+                 'example_task_never_returns']
     for i in range(100):
         finished = all(os.path.exists(str(tmpdir / _)) for _ in filenames)
         if finished:
