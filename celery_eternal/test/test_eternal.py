@@ -55,6 +55,14 @@ def example_task_never_returns():
         sleep(1)
 
 
+@app.task(base=EternalProcessTask, ignore_result=True, shared=False)
+def example_task_ignores_sigint():
+    signal.signal(signal.SIGINT, signal.SIG_IGN)
+    while True:
+        touch(os.path.join(os.environ['COV_TMP'], 'ignores_sigint'))
+        sleep(1)
+
+
 # Only needed if we are measuring test coverage
 try:
     from pytest_cov.embed import multiprocessing_finish
@@ -88,7 +96,8 @@ def test_eternal(start_test_app_worker, tmpdir):
     filenames = ['aborts_gracefully',
                  'always_succeeds',
                  'always_fails',
-                 'never_returns']
+                 'never_returns',
+                 'ignores_sigint']
     for i in range(100):
         finished = all(os.path.exists(str(tmpdir / _)) for _ in filenames)
         if finished:
