@@ -32,27 +32,26 @@ def touch(path):
 def example_task_aborts_gracefully(self):
     while not self.is_aborted():
         sleep(0.1)
-        touch(os.path.join(os.environ['COV_TMP'],
-                           'example_task_aborts_gracefully'))
+        touch(os.path.join(os.environ['COV_TMP'], 'aborts_gracefully'))
 
 
 @app.task(base=EternalTask, ignore_result=True, shared=False)
 def example_task_always_succeeds():
     sleep(0.1)
-    touch(os.path.join(os.environ['COV_TMP'], 'example_task_always_succeeds'))
+    touch(os.path.join(os.environ['COV_TMP'], 'always_succeeds'))
 
 
 @app.task(base=EternalTask, ignore_result=True, shared=False)
 def example_task_always_fails():
     sleep(0.1)
-    touch(os.path.join(os.environ['COV_TMP'], 'example_task_always_fails'))
+    touch(os.path.join(os.environ['COV_TMP'], 'always_fails'))
     raise RuntimeError('Expected to fail!')
 
 
 @app.task(base=EternalProcessTask, ignore_result=True, shared=False)
 def example_task_never_returns():
     while True:
-        touch(os.path.join(os.environ['COV_TMP'], 'example_task_never_returns'))
+        touch(os.path.join(os.environ['COV_TMP'], 'never_returns'))
         sleep(1)
 
 
@@ -86,10 +85,10 @@ def start_test_app_worker(tmpdir):
 def test_eternal(start_test_app_worker, tmpdir):
     """Test worker with two eternal tasks: one that always succeeds,
     and one that always fails."""
-    filenames = ['example_task_aborts_gracefully',
-                 'example_task_always_succeeds',
-                 'example_task_always_fails',
-                 'example_task_never_returns']
+    filenames = ['aborts_gracefully',
+                 'always_succeeds',
+                 'always_fails',
+                 'never_returns']
     for i in range(100):
         finished = all(os.path.exists(str(tmpdir / _)) for _ in filenames)
         if finished:
