@@ -1,9 +1,15 @@
+import errno
+import os
+import signal
+import time
+
+import billiard
 from celery.bootsteps import StartStopStep
 from celery.contrib.abortable import AbortableAsyncResult, AbortableTask
 from celery.utils.log import get_task_logger
 from celery_singleton import Singleton
 
-__all__ = ('EternalTask',)
+__all__ = ('EternalTask', 'EternalProcessTask')
 
 # Logging
 log = get_task_logger(__name__)
@@ -66,3 +72,35 @@ class EternalTask(AbortableTask, Singleton):
     def on_success(self, *args, **kwargs):
         super(EternalTask, self).on_success(*args, **kwargs)
         self.__exit_message()
+
+
+class EternalProcessTask(EternalTask):
+    """Base class for an eternal task that runs in a subprocess.
+
+    This is useful for tasks that do not check the method
+    :meth:`~celery.contrib.abortable.AbortableTask.is_aborted` because they
+    can still be stopped by a :obj:`KeyboardInterrupt` triggered by receving
+    the signal :data:`SIGINT`.
+
+    The task itself launches and supervises a subprocess that runs the
+    function. The subprocss has Python's default :data:`SIGINT` handler
+    installed.
+    """
+
+    def __call__(self, *args, **kwargs):
+        process = billiard.Process(target=self.run, *args, **kwargs)
+        old_handler = signal.signal(signal.SIGINT, signal.default_int_handler)
+        try:
+            process.start()
+        finally:
+            signal.signal(signal.SIGINT, old_handler)
+        while process.is_alive() and not self.is_aborted():
+            time.sleep(1)
+        if self.is_aborted():
+            try:
+                os.kill(process.pid, signal.SIGINT)
+            except OSError as e:
+                if e.errno != errno.ESRCH:
+                    log.exception('Failed to kill subprocess')
+        process.join(1)
+        process.terminate()
