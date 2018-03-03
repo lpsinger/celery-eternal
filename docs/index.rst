@@ -17,6 +17,5 @@ Like celery-singleton_, your app **must use a redis result backend**.
 API
 ---
 
-.. automodule:: celery_eternal
-    :members:
-    :show-inheritance:
+.. autoclass:: celery_eternal.EternalTask
+.. autoclass:: celery_eternal.EternalProcessTask
