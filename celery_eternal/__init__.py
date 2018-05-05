@@ -78,9 +78,9 @@ class EternalProcessTask(EternalTask):
     """Base class for an eternal task that runs in a subprocess.
 
     This is useful for tasks that do not check the method
-    :meth:`~celery.contrib.abortable.AbortableTask.is_aborted` because they
-    can still be stopped by a :obj:`KeyboardInterrupt` triggered by receving
-    the signal :data:`SIGINT`.
+    :meth:`~celery.contrib.abortable.AbortableTask.is_aborted` but can be
+    stopped by a :obj:`KeyboardInterrupt` triggered by receving the signal
+    :data:`SIGINT`.
 
     The task itself launches and supervises a subprocess that runs the
     function. The subprocess has Python's default :data:`SIGINT` handler
