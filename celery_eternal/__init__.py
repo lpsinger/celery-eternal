@@ -83,7 +83,7 @@ class EternalProcessTask(EternalTask):
     the signal :data:`SIGINT`.
 
     The task itself launches and supervises a subprocess that runs the
-    function. The subprocss has Python's default :data:`SIGINT` handler
+    function. The subprocess has Python's default :data:`SIGINT` handler
     installed.
     """
 
