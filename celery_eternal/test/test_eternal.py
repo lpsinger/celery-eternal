@@ -29,34 +29,34 @@ def touch(path):
         pass
 
 
-@app.task(base=EternalTask, bind=True, ignore_result=True, shared=False)
+@app.task(base=EternalTask, bind=True, shared=False)
 def example_task_aborts_gracefully(self):
     while not self.is_aborted():
         sleep(0.1)
         touch(os.path.join(os.environ['COV_TMP'], 'aborts_gracefully'))
 
 
-@app.task(base=EternalTask, ignore_result=True, shared=False)
+@app.task(base=EternalTask, shared=False)
 def example_task_always_succeeds():
     sleep(0.1)
     touch(os.path.join(os.environ['COV_TMP'], 'always_succeeds'))
 
 
-@app.task(base=EternalTask, ignore_result=True, shared=False)
+@app.task(base=EternalTask, shared=False)
 def example_task_always_fails():
     sleep(0.1)
     touch(os.path.join(os.environ['COV_TMP'], 'always_fails'))
     raise RuntimeError('Expected to fail!')
 
 
-@app.task(base=EternalProcessTask, ignore_result=True, shared=False)
+@app.task(base=EternalProcessTask, shared=False)
 def example_task_never_returns():
     while True:
         touch(os.path.join(os.environ['COV_TMP'], 'never_returns'))
         sleep(1)
 
 
-@app.task(base=EternalProcessTask, ignore_result=True, shared=False)
+@app.task(base=EternalProcessTask, shared=False)
 def example_task_ignores_sigint():
     signal.signal(signal.SIGINT, signal.SIG_IGN)
     while True:

@@ -41,9 +41,6 @@ class EternalTask(AbortableTask, Singleton):
     has access to the :class:`~celery.app.task.Task` instance and can call
     ``self.is_aborted()``.
 
-    Finally, you should also pass ``ignore_result=True``, because if the task
-    runs until aborted, the return value is irrelevant.
-
     Here is an example eternal task that calls a fictional function
     `do_some_work()` in a loop::
 
@@ -53,6 +50,8 @@ class EternalTask(AbortableTask, Singleton):
                 do_some_work()
 
     """
+
+    ignore_result = True
 
     @classmethod
     def on_bound(cls, app):
