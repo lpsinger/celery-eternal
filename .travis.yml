@@ -8,6 +8,6 @@ python:
 services:
   - redis-server
 install:
-  - pip install pytest-cov pytest-pep8
+  - pip install pytest-cov pytest-flake8
 script:
-  - python setup.py test --addopts='-vv --cov --pep8'
+  - python setup.py test --addopts='-vv --cov --flake8'
