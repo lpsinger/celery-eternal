@@ -88,6 +88,9 @@ class EternalProcessTask(EternalTask):
 
     def __call__(self, *args, **kwargs):
         process = billiard.Process(target=self.run, *args, **kwargs)
+        # Default name for processes is 'Process-N'. Replace 'Process'
+        # with the name of this task.
+        process.name = process.name.replace('Process', self.name)
         old_handler = signal.signal(signal.SIGINT, signal.default_int_handler)
         try:
             process.start()
